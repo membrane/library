@@ -17,6 +17,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 
 import com.predic8.example.library.rest.AuthorsResource;
 import com.predic8.example.library.rest.BooksResource;
+import com.predic8.example.library.rest.GenresResource;
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -25,7 +26,7 @@ public class StandaloneApp {
 
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-		ResourceConfig resourceConfig = new DefaultResourceConfig(BooksResource.class, AuthorsResource.class);
+		ResourceConfig resourceConfig = new DefaultResourceConfig(BooksResource.class, AuthorsResource.class, GenresResource.class);
 
 		resourceConfig.getContainerResponseFilters().add(new com.sun.jersey.server.linking.LinkFilter());
 

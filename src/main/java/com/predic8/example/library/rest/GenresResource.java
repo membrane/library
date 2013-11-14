@@ -13,8 +13,16 @@
    limitations under the License. */
 package com.predic8.example.library.rest;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import com.predic8.example.library.db.Database;
+import com.predic8.example.library.model.GenreList;
 
 @Path("genres")
 public class GenresResource {
@@ -22,6 +30,19 @@ public class GenresResource {
     @Path("{id:\\d+}")
     public GenreResource getGenre(@PathParam("id") int id) {
         return new GenreResource(id);
+    }
+    
+    @POST
+    @Path("create")
+    public Response createGenre(@Context UriInfo uriInfo) {
+		return Response.created(
+				uriInfo.getBaseUriBuilder().path("genres/{id}").build(Database.getInstance().createGenreId()))
+				.build();
+    }
+
+    @GET
+    public GenreList getGenres() {
+    	return Database.getInstance().getGenres();
     }
     
 }

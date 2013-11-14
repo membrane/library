@@ -12,8 +12,16 @@
    See the License for the specific language governing permissions and
    limitations under the License. */
 package com.predic8.example.library.rest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import com.predic8.example.library.db.Database;
+import com.predic8.example.library.model.BookList;
 
 @Path("books")
 public class BooksResource {
@@ -23,4 +31,17 @@ public class BooksResource {
         return new BookResource(id);
     }
 	
+    @POST
+    @Path("create")
+    public Response createBook(@Context UriInfo uriInfo) {
+		return Response.created(
+				uriInfo.getBaseUriBuilder().path("books/{id}").build(Database.getInstance().createBookId()))
+				.build();
+    }
+    
+    @GET
+    public BookList getBooks() {
+    	return Database.getInstance().getBooks();
+    }
+
 }

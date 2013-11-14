@@ -24,7 +24,9 @@ import com.predic8.example.library.JerseyUnlinker;
 import com.predic8.example.library.model.Author;
 import com.predic8.example.library.model.AuthorList;
 import com.predic8.example.library.model.Book;
+import com.predic8.example.library.model.BookList;
 import com.predic8.example.library.model.Genre;
+import com.predic8.example.library.model.GenreList;
 
 public class Database {
 
@@ -59,6 +61,14 @@ public class Database {
 	public synchronized Author getAuthorById(int id) {
 		return authors.get(id).clone();
 	}
+	
+	public synchronized AuthorList getAuthors() {
+		AuthorList authorlist = new AuthorList();
+		for (Map.Entry<Integer, Author> entry : authors.entrySet())
+			if (entry.getValue() != null)
+				authorlist.getAuthors().add(entry.getValue().clone());
+		return authorlist;
+	}
 
 	public synchronized void storeAuthor(Author author) {
 		authors.put(author.getId(), author);
@@ -86,6 +96,14 @@ public class Database {
 		return book;
 	}
 	
+	public synchronized BookList getBooks() {
+		BookList booklist = new BookList();
+		for (Map.Entry<Integer, Book> entry : books.entrySet())
+			if (entry.getValue() != null)
+				booklist.getBooks().add(getBookById(entry.getKey()));
+		return booklist;
+	}
+	
 	public synchronized void storeBook(Book book, UriInfo uriInfo) {
 		// store Book relations
 		bookGenres.put(book.getId(), JerseyUnlinker.getIdFromJAXBObject(uriInfo, book.getGenre()));
@@ -109,7 +127,15 @@ public class Database {
 	public synchronized Genre getGenreById(int id) {
 		return genres.get(id).clone();
 	}
-	
+
+	public synchronized GenreList getGenres() {
+		GenreList genrelist = new GenreList();
+		for (Map.Entry<Integer, Genre> entry : genres.entrySet())
+			if (entry.getValue() != null)
+				genrelist.getAuthors().add(entry.getValue().clone());
+		return genrelist;
+	}
+
 	public synchronized void storeGenre(Genre genre) {
 		genres.put(genre.getId(), genre);
 	}
