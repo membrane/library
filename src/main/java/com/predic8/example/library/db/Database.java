@@ -31,6 +31,7 @@ import com.predic8.example.library.model.GenreList;
 
 public class Database {
 
+	// singleton
 	private static volatile Database instance;
 	
 	public static synchronized Database getInstance() {
@@ -45,6 +46,10 @@ public class Database {
         }
         return result;
 	}
+	
+	
+	// sequences
+	private int lastAuthorId, lastBookId, lastGenreId;
 	
 	// entities
 	private Map<Integer, Author> authors = new HashMap<>();
@@ -79,9 +84,7 @@ public class Database {
 	}
 
 	public synchronized int createAuthorId() {
-		int id = authors.size() + 1;
-		authors.put(id, null);
-		return id;
+		return ++lastAuthorId;
 	}
 	
 	/**
@@ -90,7 +93,7 @@ public class Database {
 	public synchronized boolean removeAuthor(Author author) {
 		if (getBooks(author, null).getBooks().size() > 0)
 			return false;
-		authors.put(author.getId(), null);
+		authors.remove(author.getId());
 		return true;
 	}
 
@@ -146,16 +149,13 @@ public class Database {
 	}
 	
 	public synchronized int createBookId() {
-		int id = books.size() + 1;
-		books.put(id, null);
-		return id;
+		return ++lastBookId;
 	}
 
-	public synchronized boolean removeBook(Book book) {
-		books.put(book.getId(), null);
+	public synchronized void removeBook(Book book) {
+		books.remove(book.getId());
 		bookAuthors.remove(book.getId());
 		bookGenres.remove(book.getId());
-		return true;
 	}
 
 	public synchronized Genre getGenreById(int id) {
@@ -178,9 +178,7 @@ public class Database {
 	}
 	
 	public synchronized int createGenreId() {
-		int id = genres.size() + 1;
-		genres.put(id, null);
-		return id;
+		return ++lastGenreId;
 	}
 
 	/**
@@ -189,7 +187,7 @@ public class Database {
 	public synchronized boolean removeGenre(Genre genre) {
 		if (getBooks(null, genre).getBooks().size() > 0)
 			return false;
-		genres.put(genre.getId(), null);
+		genres.remove(genre.getId());
 		return true;
 	}
 
