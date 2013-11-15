@@ -15,6 +15,7 @@ package com.predic8.example.library.db;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -101,6 +102,19 @@ public class Database {
 		for (Map.Entry<Integer, Book> entry : books.entrySet())
 			if (entry.getValue() != null)
 				booklist.getBooks().add(getBookById(entry.getKey()));
+		return booklist;
+	}
+	
+	public synchronized BookList getBooks(Author byAuthor, Genre byGenre) {
+		BookList booklist = getBooks();
+		Iterator<Book> i = booklist.getBooks().iterator();
+		while (i.hasNext()) {
+			Book b = i.next();
+			if (byAuthor != null && !b.getAuthors().getAuthors().contains(byAuthor))
+				i.remove();
+			if (byGenre != null && !b.getGenre().equals(byGenre))
+				i.remove();
+		}
 		return booklist;
 	}
 	

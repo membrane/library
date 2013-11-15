@@ -46,6 +46,13 @@ public class Book implements Cloneable {
 	public URI self;
 	
 	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Book))
+			return false;
+		return id == ((Book) obj).id;
+	}
+
+	@Override
 	protected Book clone() {
 		try {
 			Book clone = (Book) super.clone();

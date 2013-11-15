@@ -15,11 +15,13 @@ package com.predic8.example.library.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import com.predic8.example.library.db.Database;
 import com.predic8.example.library.model.Author;
+import com.predic8.example.library.model.BookList;
 
 public class AuthorResource {
 
@@ -45,6 +47,12 @@ public class AuthorResource {
 	public void put(Author a) {
 		a.setId(id);
 		Database.getInstance().storeAuthor(a);
+	}
+	
+	@Path("books")
+	@GET
+	public BookList getBooks() {
+		return Database.getInstance().getBooks(get(), null);
 	}
 
 }

@@ -40,6 +40,13 @@ public class Genre implements Cloneable {
 	public URI self;
 	
 	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Genre))
+			return false;
+		return id == ((Genre) obj).id;
+	}
+
+	@Override
 	public Genre clone() {
 		try {
 			return (Genre) super.clone();

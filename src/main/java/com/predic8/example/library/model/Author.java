@@ -40,6 +40,13 @@ public class Author implements Cloneable {
 	public URI self;
 	
 	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Author))
+			return false;
+		return id == ((Author) obj).id;
+	}
+	
+	@Override
 	public Author clone() {
 		try {
 			return (Author) super.clone();

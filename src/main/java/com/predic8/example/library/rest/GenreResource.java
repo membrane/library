@@ -15,10 +15,12 @@ package com.predic8.example.library.rest;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import com.predic8.example.library.db.Database;
+import com.predic8.example.library.model.BookList;
 import com.predic8.example.library.model.Genre;
 
 public class GenreResource {
@@ -46,5 +48,12 @@ public class GenreResource {
 		g.setId(id);
 		Database.getInstance().storeGenre(g);
 	}
+	
+	@Path("books")
+	@GET
+	public BookList getBooks() {
+		return Database.getInstance().getBooks(null, get());
+	}
+
 	
 }
