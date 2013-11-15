@@ -13,8 +13,6 @@
    limitations under the License. */
 package com.predic8.example.library.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -23,25 +21,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.predic8.example.library.Constants;
 
 @XmlRootElement(name="genres", namespace=Constants.P8_LIBRARY_NS)
-public class GenreList {
-	
-	private List<Genre> genres;
+public class GenreList extends GenericList<Genre> {
 	
 	public GenreList() {
-		genres = new ArrayList<>();
 	}
-	
+
 	public GenreList(Genre... genres) {
-		this.genres = Arrays.asList(genres);
+		super();
+		this.items.ensureCapacity(genres.length);
+		for (Genre genre : genres)
+			this.items.add(genre);
 	}
 	
-	public List<Genre> getAuthors() {
-		return genres;
+	@Override
+	public GenreList clone() {
+		return (GenreList) super.clone();
+	}
+	
+	public List<Genre> getGenres() {
+		return items;
 	}
 	
 	@XmlElement(name="genre")
-	public void setAuthors(List<Genre> genres) {
-		this.genres = genres;
+	public void setGenres(List<Genre> genres) {
+		items.clear();
+		items.addAll(genres);
 	}
 
 }

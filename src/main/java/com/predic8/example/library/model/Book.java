@@ -26,7 +26,7 @@ import com.sun.jersey.server.linking.Ref;
 import com.sun.jersey.server.linking.Ref.Style;
 
 @XmlRootElement(name="book", namespace=Constants.P8_LIBRARY_NS)
-public class Book implements Cloneable {
+public final class Book extends GenericItem<Book> {
 	
 	private int id;
 	private AuthorList authors;
@@ -53,15 +53,11 @@ public class Book implements Cloneable {
 	}
 
 	@Override
-	protected Book clone() {
-		try {
-			Book clone = (Book) super.clone();
-			clone.authors = authors.clone();
-			clone.genre = genre.clone();
-			return clone;
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
+	public Book clone() {
+		Book clone = super.clone();
+		clone.authors = authors.clone();
+		clone.genre = genre.clone();
+		return clone;
 	}
 	
 	public int getId() {

@@ -26,7 +26,7 @@ import com.sun.jersey.server.linking.Ref;
 import com.sun.jersey.server.linking.Ref.Style;
 
 @XmlRootElement(name="author", namespace=Constants.P8_LIBRARY_NS)
-public class Author implements Cloneable {
+public final class Author extends GenericItem<Author> {
 	
 	private int id;
 	private String name;
@@ -38,22 +38,6 @@ public class Author implements Cloneable {
 			bindings = @Binding(name = "id", value = "${instance.id}"))
 	@XmlAttribute(namespace=Constants.XLINK_NS, name="href")
 	public URI self;
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Author))
-			return false;
-		return id == ((Author) obj).id;
-	}
-	
-	@Override
-	public Author clone() {
-		try {
-			return (Author) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-	}
 	
 	public int getId() {
 		return id;

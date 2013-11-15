@@ -13,34 +13,24 @@
    limitations under the License. */
 package com.predic8.example.library.model;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public abstract class GenericList<T extends GenericItem<T>> {
 
-import com.predic8.example.library.Constants;
+	protected ArrayList<T> items = new ArrayList<>();
 
-@XmlRootElement(name="books", namespace=Constants.P8_LIBRARY_NS)
-public class BookList extends GenericList<Book> {
-	
-	public BookList() {
-	}
-
-	public BookList(Book... books) {
-		super();
-		this.items.ensureCapacity(books.length);
-		for (Book book : books)
-			this.items.add(book);
-	}
-	
-	public List<Book> getBooks() {
-		return items;
-	}
-	
-	@XmlElement(name="book")
-	public void setBooks(List<Book> books) {
-		items.clear();
-		items.addAll(books);
+	@SuppressWarnings("unchecked")
+	@Override
+	public GenericList<T> clone() {
+		try {
+			GenericList<T> clone = (GenericList<T>) super.clone();
+			clone.items = new ArrayList<>(items.size());
+			for (GenericItem<T> a : items)
+				clone.items.add((T) a.clone());
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

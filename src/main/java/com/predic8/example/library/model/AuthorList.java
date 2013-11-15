@@ -13,8 +13,6 @@
    limitations under the License. */
 package com.predic8.example.library.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -23,39 +21,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.predic8.example.library.Constants;
 
 @XmlRootElement(name="authors", namespace=Constants.P8_LIBRARY_NS)
-public class AuthorList {
-	
-	private List<Author> authors;
-	
+public class AuthorList extends GenericList<Author> {
+
 	public AuthorList() {
-		authors = new ArrayList<>();
 	}
-	
+
 	public AuthorList(Author... authors) {
-		this.authors = Arrays.asList(authors);
+		super();
+		this.items.ensureCapacity(authors.length);
+		for (Author author : authors)
+			this.items.add(author);
 	}
 	
 	@Override
 	public AuthorList clone() {
-		try {
-			AuthorList clone = (AuthorList) super.clone();
-			clone.authors = new ArrayList<>(authors.size());
-			for (Author a : authors)
-				clone.authors.add(a.clone());
-			return clone;
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
+		return (AuthorList) super.clone();
 	}
-
 	
 	public List<Author> getAuthors() {
-		return authors;
+		return items;
 	}
 	
 	@XmlElement(name="author")
 	public void setAuthors(List<Author> authors) {
-		this.authors = authors;
+		items.clear();
+		items.addAll(authors);
 	}
 
 }

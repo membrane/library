@@ -26,7 +26,7 @@ import com.sun.jersey.server.linking.Ref;
 import com.sun.jersey.server.linking.Ref.Style;
 
 @XmlRootElement(name="genre", namespace=Constants.P8_LIBRARY_NS)
-public class Genre implements Cloneable {
+public class Genre extends GenericItem<Genre> {
 	
 	private int id;
 	private String name;
@@ -46,15 +46,6 @@ public class Genre implements Cloneable {
 		return id == ((Genre) obj).id;
 	}
 
-	@Override
-	public Genre clone() {
-		try {
-			return (Genre) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public int getId() {
 		return id;
 	}

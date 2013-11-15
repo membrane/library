@@ -169,7 +169,7 @@ public class Database {
 		GenreList genrelist = new GenreList();
 		for (Map.Entry<Integer, Genre> entry : genres.entrySet())
 			if (entry.getValue() != null)
-				genrelist.getAuthors().add(entry.getValue().clone());
+				genrelist.getGenres().add(entry.getValue().clone());
 		return genrelist;
 	}
 
