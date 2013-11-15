@@ -45,6 +45,7 @@ import com.sun.jersey.server.linking.Ref;
 /**
  * Utility for working with @Ref annotations
  * @author mh124079
+ * @author Tobias Polley <polley@predic8.de>
  */
 public interface RefDescriptor {
     /**
@@ -73,4 +74,9 @@ public interface RefDescriptor {
      */
     String getCondition();
     
+    /**
+     * Get the parameter names, either directly from parameterNames() or from the @Path of the class referenced in resource()
+     * @return the link parameter names
+     */
+    String[] getParameterNames();
 }

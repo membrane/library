@@ -143,4 +143,5 @@ public @interface Ref {
      */
     String condition() default "";
 
+    String[] parameterNames() default {};
 }

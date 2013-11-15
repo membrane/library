@@ -40,12 +40,10 @@
 
 package com.sun.jersey.server.linking.impl;
 
-import com.sun.jersey.core.reflection.MethodList;
-import com.sun.jersey.server.linking.Binding;
-import com.sun.jersey.server.linking.Ref;
-
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -53,12 +51,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 import org.glassfish.jersey.server.model.AnnotatedMethod;
+
+import com.sun.jersey.core.reflection.MethodList;
+import com.sun.jersey.server.linking.Binding;
+import com.sun.jersey.server.linking.Ref;
 
 /**
  * Utility class for working with {@link Ref} annotated fields
  * @author mh124079
+ * @author Tobias Polley <polley@predic8.de>
  */
 public class RefFieldDescriptor extends FieldDescriptor implements RefDescriptor {
 
@@ -125,6 +129,42 @@ public class RefFieldDescriptor extends FieldDescriptor implements RefDescriptor
             template = link.value();
         }
         return template;
+    }
+
+    public String[] getParameterNames() {
+        return getParameterNames(link);
+    }
+
+    public static String[] getParameterNames(Ref link) {
+        if (!link.resource().equals(Class.class)) {
+            ArrayList<String> parameterNames = new ArrayList<>();
+
+            // extract template from specified class' @Path annotation
+            Path path = link.resource().getAnnotation(Path.class);
+            if (path != null)
+            	;// TODO: extract parameterNames from class constructor
+            if (link.method().length() > 0) {
+                // append value of method's @Path annotation
+                MethodList methods = new MethodList(link.resource());
+                Iterator<AnnotatedMethod> iterator = methods.iterator();
+                while (iterator.hasNext()) {
+                    AnnotatedMethod method = iterator.next();
+                    if (!method.getMethod().getName().equals(link.method()))
+                        continue;
+                    
+                    
+                    for (Annotation[] annotations : method.getParameterAnnotations())
+                    	for (Annotation annotation : annotations)
+                    		if (annotation instanceof QueryParam)
+                    			parameterNames.add(((QueryParam)annotation).value());
+                    
+                    break;
+                }
+            }
+            return parameterNames.toArray(new String[parameterNames.size()]);
+        } else {
+        	return link.parameterNames();
+        }
     }
 
     public String getBinding(String name) {

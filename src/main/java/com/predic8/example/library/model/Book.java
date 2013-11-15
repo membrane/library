@@ -39,19 +39,12 @@ public final class Book extends GenericItem<Book> {
 
 	@Ref(
 			resource = BooksResource.class, 
-			method = "getBook", 
+			method = "getBook",
 			style = Style.ABSOLUTE, 
 			bindings = @Binding(name = "id", value = "${instance.id}"))
 	@XmlAttribute(namespace=Constants.XLINK_NS, name="href")
 	public URI self;
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Book))
-			return false;
-		return id == ((Book) obj).id;
-	}
-
 	@Override
 	public Book clone() {
 		Book clone = super.clone();

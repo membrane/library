@@ -41,12 +41,8 @@ public class BookList extends GenericList<Book, BookList> {
 	
 	
 	@Ref(
-			/*
 			resource = BooksResource.class, 
 			method = "get", 
-			*/
-			value = "/books/?q={q}&offset={offset}",
-			
 			style = Style.ABSOLUTE,
 			condition = "${instance.nextOffset != 0}",
 			bindings = { 

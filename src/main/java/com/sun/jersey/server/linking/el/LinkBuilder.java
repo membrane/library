@@ -44,6 +44,7 @@ import com.sun.jersey.server.linking.Ref;
 import com.sun.jersey.server.linking.impl.RefDescriptor;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,8 +88,15 @@ public class LinkBuilder {
 
         // now process any embedded URI template parameters
         UriBuilder ub=applyLinkStyle(template, link.getLinkStyle(), uriInfo);
+        
+        
+        for (String parameterName : link.getParameterNames())
+        	ub.queryParam(parameterName, "{" + parameterName + "}");
+        	
         UriTemplateParser parser = new UriTemplateParser(template);
-        List<String> parameterNames = parser.getNames();
+        List<String> parameterNames = new ArrayList<String>(parser.getNames());
+        for (String parameterName : link.getParameterNames())
+        	parameterNames.add(parameterName);
         Map<String, Object> valueMap = getParameterValues(parameterNames, link, context);
         URI uri = ub.buildFromMap(valueMap);
         return uri;

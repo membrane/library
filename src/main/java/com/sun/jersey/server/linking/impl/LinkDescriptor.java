@@ -40,15 +40,17 @@
 
 package com.sun.jersey.server.linking.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sun.jersey.server.linking.Binding;
 import com.sun.jersey.server.linking.Link;
 import com.sun.jersey.server.linking.Ref.Style;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Utility class for working with {@link Link} annotations
  * @author mh124079
+ * @author Tobias Polley <polley@predic8.de>
  */
 public class LinkDescriptor implements RefDescriptor {
 
@@ -81,6 +83,10 @@ public class LinkDescriptor implements RefDescriptor {
 
     public String getCondition() {
         return linkHeader.value().condition();
+    }
+    
+    public String[] getParameterNames() {
+    	return RefFieldDescriptor.getParameterNames(linkHeader.value());
     }
 
 }
