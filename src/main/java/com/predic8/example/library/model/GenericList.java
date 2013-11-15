@@ -16,14 +16,40 @@ package com.predic8.example.library.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * @param <T> the Item type
  * @param <S> the final list type
  */
 public abstract class GenericList<T extends GenericItem<T>, S extends GenericList<T, S>> {
 
+	public static final int LIST_PAGE_SIZE = 10;
+	
 	protected ArrayList<T> items = new ArrayList<>();
-
+	
+	private String searchExpr;
+	
+	public String getSearchExpr() {
+		return searchExpr;
+	}
+	
+	@XmlTransient
+	public void setSearchExpr(String searchExpr) {
+		this.searchExpr = searchExpr;
+	}
+	
+	private int nextOffset;
+	
+	public int getNextOffset() {
+		return nextOffset;
+	}
+	
+	@XmlTransient
+	public void setNextOffset(int nextOffset) {
+		this.nextOffset = nextOffset;
+	}
+	
 	@Override
 	public S clone() {
 		try {
@@ -43,11 +69,27 @@ public abstract class GenericList<T extends GenericItem<T>, S extends GenericLis
 		if (searchExpr == null || searchExpr.length() == 0)
 			return (S)this;
 		
+		this.searchExpr = searchExpr;
+		
 		Iterator<T> it = items.iterator();
 		while (it.hasNext()) {
 			T current = it.next();
 			if (!current.matches(searchExpr))
 				it.remove();
+		}
+		return (S)this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public S offset(int offset) {
+		if (offset < 0 || offset >= items.size()) {
+			items.clear();
+		} else {
+			items.subList(0, offset).clear();
+			if (items.size() > LIST_PAGE_SIZE) {
+				setNextOffset(offset + LIST_PAGE_SIZE);
+				items.subList(LIST_PAGE_SIZE, items.size()).clear();
+			}
 		}
 		return (S)this;
 	}

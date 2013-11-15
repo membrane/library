@@ -13,12 +13,18 @@
    limitations under the License. */
 package com.predic8.example.library.model;
 
+import java.net.URI;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.predic8.example.library.Constants;
+import com.predic8.example.library.rest.BooksResource;
+import com.sun.jersey.server.linking.Binding;
+import com.sun.jersey.server.linking.Ref;
+import com.sun.jersey.server.linking.Ref.Style;
 
 @XmlRootElement(name="books", namespace=Constants.P8_LIBRARY_NS)
 public class BookList extends GenericList<Book, BookList> {
@@ -32,6 +38,24 @@ public class BookList extends GenericList<Book, BookList> {
 		for (Book book : books)
 			this.items.add(book);
 	}
+	
+	
+	@Ref(
+			/*
+			resource = BooksResource.class, 
+			method = "get", 
+			*/
+			value = "/books/?q={q}&offset={offset}",
+			
+			style = Style.ABSOLUTE,
+			condition = "${instance.nextOffset != 0}",
+			bindings = { 
+				@Binding(name = "q", value = "${instance.searchExpr}"),
+				@Binding(name = "offset", value = "${instance.nextOffset}"),
+				})
+	@XmlAttribute(name="next")
+	public URI next;
+	
 	
 	public List<Book> getBooks() {
 		return items;

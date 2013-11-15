@@ -43,9 +43,10 @@ public class GenresResource {
     }
 
     @GET
-    public GenreList getGenres(
-    		@QueryParam("q") @DefaultValue("") String searchExpr) {
-    	return Database.getInstance().getGenres().filter(searchExpr);
+    public GenreList get(
+    		@QueryParam("q") @DefaultValue("") String searchExpr,
+    		@QueryParam("offset") @DefaultValue("0") int offset) {
+    	return Database.getInstance().getGenres().filter(searchExpr).offset(offset);
     }
     
 }

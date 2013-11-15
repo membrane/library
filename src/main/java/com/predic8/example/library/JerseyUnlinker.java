@@ -22,7 +22,8 @@ import java.util.regex.Matcher;
 
 import javax.ws.rs.core.UriInfo;
 
-import com.sun.jersey.api.uri.UriTemplateParser;
+import org.glassfish.jersey.uri.internal.UriTemplateParser;
+
 import com.sun.jersey.server.linking.LinkFilter;
 import com.sun.jersey.server.linking.impl.EntityDescriptor;
 import com.sun.jersey.server.linking.impl.RefFieldDescriptor;

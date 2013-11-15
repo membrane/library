@@ -13,25 +13,13 @@
    limitations under the License. */
 package com.predic8.example.library;
 
-import java.net.URI;
+import org.glassfish.jersey.server.ResourceConfig;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ApplicationHandler;
-
-public class StandaloneApp {
-
-	public static void main(String[] args) throws Exception {
-		ApplicationHandler applicationHandler = new ApplicationHandler(new MyApplication());
-		
-		HttpServer s = GrizzlyHttpServerFactory.createHttpServer(new URI("http://0.0.0.0:5555"), applicationHandler);
-		
-		try {
-			System.out.println("Press any key to stop the service...");
-			System.in.read();
-		} finally {
-			s.stop();
-		}
+public class MyApplication extends ResourceConfig {
+	
+	public MyApplication() {
+		packages("com.predic8.example.library.rest");
+		packages("com.sun.jersey.server.linking");
 	}
 
 }

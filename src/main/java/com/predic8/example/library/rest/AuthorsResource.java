@@ -43,9 +43,10 @@ public class AuthorsResource {
     }
     
     @GET
-    public AuthorList getAuthors(
-    		@QueryParam("q") @DefaultValue("") String searchExpr) {
-    	return Database.getInstance().getAuthors().filter(searchExpr);
+    public AuthorList get(
+    		@QueryParam("q") @DefaultValue("") String searchExpr,
+    		@QueryParam("offset") @DefaultValue("0") int offset) {
+    	return Database.getInstance().getAuthors().filter(searchExpr).offset(offset);
     }
 
 }

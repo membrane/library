@@ -42,9 +42,10 @@ public class BooksResource {
     }
     
     @GET
-    public BookList getBooks(
-    		@QueryParam("q") @DefaultValue("") String searchExpr) {
-    	return Database.getInstance().getBooks().filter(searchExpr);
+    public BookList get(
+    		@QueryParam("q") @DefaultValue("") String searchExpr,
+    		@QueryParam("offset") @DefaultValue("0") int offset) {
+    	return Database.getInstance().getBooks().filter(searchExpr).offset(offset);
     }
 
 }
