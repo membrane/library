@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.predic8.example.library.Constants;
 
 @XmlRootElement(name="authors", namespace=Constants.P8_LIBRARY_NS)
-public class AuthorList extends GenericList<Author> {
+public final class AuthorList extends GenericList<Author, AuthorList> {
 
 	public AuthorList() {
 	}
@@ -31,11 +31,6 @@ public class AuthorList extends GenericList<Author> {
 		this.items.ensureCapacity(authors.length);
 		for (Author author : authors)
 			this.items.add(author);
-	}
-	
-	@Override
-	public AuthorList clone() {
-		return (AuthorList) super.clone();
 	}
 	
 	public List<Author> getAuthors() {

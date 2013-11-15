@@ -14,23 +14,42 @@
 package com.predic8.example.library.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public abstract class GenericList<T extends GenericItem<T>> {
+/**
+ * @param <T> the Item type
+ * @param <S> the final list type
+ */
+public abstract class GenericList<T extends GenericItem<T>, S extends GenericList<T, S>> {
 
 	protected ArrayList<T> items = new ArrayList<>();
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public GenericList<T> clone() {
+	public S clone() {
 		try {
-			GenericList<T> clone = (GenericList<T>) super.clone();
+			@SuppressWarnings("unchecked")
+			S clone = (S) super.clone();
 			clone.items = new ArrayList<>(items.size());
-			for (GenericItem<T> a : items)
-				clone.items.add((T) a.clone());
+			for (T a : items)
+				clone.items.add(a.clone());
 			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public S filter(String searchExpr) {
+		if (searchExpr == null || searchExpr.length() == 0)
+			return (S)this;
+		
+		Iterator<T> it = items.iterator();
+		while (it.hasNext()) {
+			T current = it.next();
+			if (!current.matches(searchExpr))
+				it.remove();
+		}
+		return (S)this;
 	}
 
 }

@@ -13,10 +13,12 @@
    limitations under the License. */
 package com.predic8.example.library.rest;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -41,8 +43,9 @@ public class AuthorsResource {
     }
     
     @GET
-    public AuthorList getAuthors() {
-    	return Database.getInstance().getAuthors();
+    public AuthorList getAuthors(
+    		@QueryParam("q") @DefaultValue("") String searchExpr) {
+    	return Database.getInstance().getAuthors().filter(searchExpr);
     }
 
 }

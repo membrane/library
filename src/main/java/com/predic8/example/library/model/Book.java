@@ -124,4 +124,10 @@ public final class Book extends GenericItem<Book> {
 	public void setGenre(Genre genre) {
 		this.genre = genre;
 	}
+	
+	@Override
+	public boolean matches(String expr) {
+		return title.contains(expr) || isbn.contains(expr) || publisher.contains(expr) || edition.contains(expr)
+				|| Integer.toString(year).contains(expr);
+	}
 }

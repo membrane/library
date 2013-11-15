@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.predic8.example.library.Constants;
 
 @XmlRootElement(name="genres", namespace=Constants.P8_LIBRARY_NS)
-public class GenreList extends GenericList<Genre> {
+public class GenreList extends GenericList<Genre, GenreList> {
 	
 	public GenreList() {
 	}
@@ -31,11 +31,6 @@ public class GenreList extends GenericList<Genre> {
 		this.items.ensureCapacity(genres.length);
 		for (Genre genre : genres)
 			this.items.add(genre);
-	}
-	
-	@Override
-	public GenreList clone() {
-		return (GenreList) super.clone();
 	}
 	
 	public List<Genre> getGenres() {

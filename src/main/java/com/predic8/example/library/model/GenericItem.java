@@ -16,7 +16,12 @@ package com.predic8.example.library.model;
 public abstract class GenericItem<T extends GenericItem<T>> implements Cloneable {
 	
 	public abstract int getId();
-	
+
+	/**
+	 * @return whether the item matches the search expression
+	 */
+	public abstract boolean matches(String searchExpr);
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {

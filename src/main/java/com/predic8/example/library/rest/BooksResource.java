@@ -12,10 +12,12 @@
    See the License for the specific language governing permissions and
    limitations under the License. */
 package com.predic8.example.library.rest;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -40,8 +42,9 @@ public class BooksResource {
     }
     
     @GET
-    public BookList getBooks() {
-    	return Database.getInstance().getBooks();
+    public BookList getBooks(
+    		@QueryParam("q") @DefaultValue("") String searchExpr) {
+    	return Database.getInstance().getBooks().filter(searchExpr);
     }
 
 }

@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.predic8.example.library.Constants;
 
 @XmlRootElement(name="books", namespace=Constants.P8_LIBRARY_NS)
-public class BookList extends GenericList<Book> {
+public class BookList extends GenericList<Book, BookList> {
 	
 	public BookList() {
 	}

@@ -55,5 +55,10 @@ public final class Author extends GenericItem<Author> {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	public boolean matches(String expr) {
+		return name.contains(expr);
+	}
 
 }

@@ -63,4 +63,8 @@ public class Genre extends GenericItem<Genre> {
 		this.name = name;
 	}
 	
+	@Override
+	public boolean matches(String expr) {
+		return name.contains(expr);
+	}
 }
