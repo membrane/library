@@ -13,6 +13,7 @@
    limitations under the License. */
 package com.predic8.example.library.rest;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.WebApplicationException;
@@ -48,5 +49,11 @@ public class BookResource {
     	b.setId(id);
     	Database.getInstance().storeBook(b, uriInfo);
     }
+    
+	@DELETE
+	public void delete() {
+		Database.getInstance().removeBook(get());
+	}
+
 
 }

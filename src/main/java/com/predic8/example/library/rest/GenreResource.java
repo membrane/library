@@ -13,10 +13,13 @@
    limitations under the License. */
 package com.predic8.example.library.rest;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.predic8.example.library.db.Database;
@@ -47,6 +50,15 @@ public class GenreResource {
 	public void put(Genre g) {
 		g.setId(id);
 		Database.getInstance().storeGenre(g);
+	}
+	
+	@DELETE
+	public void delete() {
+		if (!Database.getInstance().removeGenre(get()))
+			throw new WebApplicationException(Response
+					.status(Status.FORBIDDEN)
+					.entity(new GenericEntity<>("Cannot delete object because there are foreign key constraints.",
+							String.class)).build());
 	}
 	
 	@Path("books")

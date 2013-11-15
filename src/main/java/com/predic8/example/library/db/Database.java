@@ -60,7 +60,10 @@ public class Database {
 	}
 	
 	public synchronized Author getAuthorById(int id) {
-		return authors.get(id).clone();
+		Author author = authors.get(id);
+		if (author == null)
+			return null;
+		return author.clone();
 	}
 	
 	public synchronized AuthorList getAuthors() {
@@ -79,6 +82,16 @@ public class Database {
 		int id = authors.size() + 1;
 		authors.put(id, null);
 		return id;
+	}
+	
+	/**
+	 * @return false, if the Author could not be deleted (because of foreign key constraints)
+	 */
+	public synchronized boolean removeAuthor(Author author) {
+		if (getBooks(author, null).getBooks().size() > 0)
+			return false;
+		authors.put(author.getId(), null);
+		return true;
 	}
 
 	public synchronized Book getBookById(int id) {
@@ -137,9 +150,19 @@ public class Database {
 		books.put(id, null);
 		return id;
 	}
-	
+
+	public synchronized boolean removeBook(Book book) {
+		books.put(book.getId(), null);
+		bookAuthors.remove(book.getId());
+		bookGenres.remove(book.getId());
+		return true;
+	}
+
 	public synchronized Genre getGenreById(int id) {
-		return genres.get(id).clone();
+		Genre genre = genres.get(id);
+		if (genre == null)
+			return null;
+		return genre.clone();
 	}
 
 	public synchronized GenreList getGenres() {
@@ -158,6 +181,16 @@ public class Database {
 		int id = genres.size() + 1;
 		genres.put(id, null);
 		return id;
+	}
+
+	/**
+	 * @return false, if the Genre could not be deleted (because of foreign key constraints)
+	 */
+	public synchronized boolean removeGenre(Genre genre) {
+		if (getBooks(null, genre).getBooks().size() > 0)
+			return false;
+		genres.put(genre.getId(), null);
+		return true;
 	}
 
 }
