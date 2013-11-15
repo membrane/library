@@ -33,6 +33,7 @@ public class Book implements Cloneable {
 	private String title;
 	private String isbn;
 	private String publisher;
+	private String edition;
 	private int year;
 	private Genre genre;
 
@@ -95,6 +96,14 @@ public class Book implements Cloneable {
 	
 	public void setPublisher(String publisher) {
 		this.publisher = publisher;
+	}
+	
+	public String getEdition() {
+		return edition;
+	}
+	
+	public void setEdition(String edition) {
+		this.edition = edition;
 	}
 	
 	public int getYear() {
