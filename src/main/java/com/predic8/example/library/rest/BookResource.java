@@ -17,44 +17,19 @@ import java.util.concurrent.Callable;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
-import com.predic8.example.library.VersionUtil;
 import com.predic8.example.library.db.Database;
 import com.predic8.example.library.model.Book;
 
-public class BookResource {
+public class BookResource extends GenericItemResource {
 
-	private final Database db = Database.getInstance();
-
-	@PathParam("id")
-	private int id;
-	@HeaderParam("If-Match")
-	private String ifMatch;
-	@HeaderParam("If-None-Match")
-	private String ifNoneMatch;
-	
-	public int getId() {
-		return id;
-	}
-	
-	private void checkPrecondition(boolean returnNotModifiedIfCheckFailed) {
-		Long version = db.getBookVersion(id);
-		if (ifMatch != null && !VersionUtil.ifMatch(version, ifMatch) ||
-				ifNoneMatch != null && !VersionUtil.ifNoneMatch(version, ifNoneMatch)) {
-			if (returnNotModifiedIfCheckFailed) {
-				throw new WebApplicationException(Response.notModified(version == null ? null : version.toString()).build());
-			} else {
-				throw new WebApplicationException(Status.PRECONDITION_FAILED);
-			}
-		}
+	protected Long getItemVersion() {
+		return db.getBookVersion(getId());
 	}
 	
     @GET
@@ -63,7 +38,7 @@ public class BookResource {
     		public Book call() {
     			checkPrecondition(true);
 
-    			Book b = Database.getInstance().getBookById(id);
+    			Book b = Database.getInstance().getBookById(getId());
     			if (b == null)
     				throw new WebApplicationException(Status.NOT_FOUND);
     			return b;
@@ -72,14 +47,12 @@ public class BookResource {
     }
     
     @PUT
-	public void put(
-			final Book b,
-			@Context final UriInfo uriInfo) {
+	public void put(final Book b, @Context final UriInfo uriInfo) {
     	db.transact(new Runnable() {
     		public void run() {
     			checkPrecondition(false);
     	    	
-    			b.setId(id);
+    			b.setId(getId());
     			db.storeBook(b, uriInfo);
     		}
     	});

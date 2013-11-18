@@ -58,13 +58,14 @@ public class VersionUtil {
 	 *            the value of the "If-Match" HTTP request header (or null, if the header is not present)
 	 * @return True, if the versions match (and normal request processing should continue). False, if HTTP status code
 	 *         "412 Precondition failed." should be returned.
+	 * @throws HeaderValueParsingException if the header value could not be parsed
 	 */
-	public static boolean ifMatch(Long entityVersion, String ifMatch) {
+	public static boolean ifMatch(Long entityVersion, String ifMatch) throws HeaderValueParsingException {
 		if (ifMatch == null)
 			return true;
 		Set<Long> etags = parseETags(ifMatch);
 		if (etags == null)
-			return false; // do not execute request: invalid header value
+			throw new HeaderValueParsingException();
 		return entityVersion != null && (etags.contains(-1l) || etags.contains(entityVersion));
 	}
 
@@ -80,14 +81,20 @@ public class VersionUtil {
 	 * @return True, if the versions do not match (and normal request processing should continue). False, if HTTP status
 	 *         code "304 Not modified" (for GET requests) or "412 Precondition failed" (for request methods other than
 	 *         GET) should be returned.
+	 * @throws HeaderValueParsingException if the header value could not be parsed
 	 */
-	public static boolean ifNoneMatch(Long entityVersion, String ifNoneMatch) {
+	public static boolean ifNoneMatch(Long entityVersion, String ifNoneMatch) throws HeaderValueParsingException {
 		if (ifNoneMatch == null)
 			return true;
 		Set<Long> etags = parseETags(ifNoneMatch);
 		if (etags == null)
-			return false; // do not execute request: invalid header value
+			throw new HeaderValueParsingException();
 		return !(entityVersion != null && (etags.contains(-1l) || etags.contains(entityVersion)));
+	}
+	
+	public static class HeaderValueParsingException extends Exception {
 
+		private static final long serialVersionUID = 1L;
+		
 	}
 }

@@ -13,56 +13,73 @@
    limitations under the License. */
 package com.predic8.example.library.rest;
 
+import java.util.concurrent.Callable;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.predic8.example.library.db.Database;
 import com.predic8.example.library.model.Author;
 import com.predic8.example.library.model.BookList;
 
-public class AuthorResource {
+public class AuthorResource extends GenericItemResource {
 
-	@PathParam("id")
-	private int id;
-	
-	public int getId() {
-		return id;
+	@Override
+	protected Long getItemVersion() {
+		return db.getAuthorVersion(getId());
 	}
 
 	@GET
-	public Author get() {
-		Author a = Database.getInstance().getAuthorById(id);
-		if (a == null)
-			throw new WebApplicationException(Status.NOT_FOUND);
-		return a;
+	public Author get() throws Exception {
+    	return db.transact(new Callable<Author>() {
+    		public Author call() {
+    			checkPrecondition(true);
+
+    			Author a = db.getAuthorById(getId());
+    			if (a == null)
+    				throw new WebApplicationException(Status.NOT_FOUND);
+    			return a;
+    		}
+    	});
 	}
 	
 	@PUT
-	public void put(Author a) {
-		a.setId(id);
-		Database.getInstance().storeAuthor(a);
+	public void put(final Author a) {
+    	db.transact(new Runnable() {
+    		public void run() {
+    			checkPrecondition(false);
+    	    	
+    			a.setId(getId());
+    			db.storeAuthor(a);
+    		}
+    	});
 	}
 	
 	@DELETE
-	public void delete() {
-		if (!Database.getInstance().removeAuthor(get()))
-			throw new WebApplicationException(Response
-					.status(Status.FORBIDDEN)
-					.entity(new GenericEntity<>("Cannot delete object because there are foreign key constraints.",
-							String.class)).build());
+	public void delete() throws Exception {
+    	db.transact(new Callable<Void>() {
+    		public Void call() throws Exception {
+    			checkPrecondition(false);
+    	    	
+    			if (!db.removeAuthor(get()))
+    				throw new WebApplicationException(Response
+    						.status(Status.FORBIDDEN)
+    						.entity(new GenericEntity<>("Cannot delete object because there are foreign key constraints.",
+    								String.class)).build());
+    			return null;
+    		}
+    	});
 	}
 	
 	@Path("books")
 	@GET
-	public BookList getBooks() {
-		return Database.getInstance().getBooks(get(), null);
+	public BookList getBooks() throws Exception {
+		return db.getBooks(get(), null);
 	}
 
 }
