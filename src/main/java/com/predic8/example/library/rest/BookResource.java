@@ -19,6 +19,7 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -31,30 +32,36 @@ import com.predic8.example.library.model.Book;
 
 public class BookResource {
 
-	private final int id;
-	
-	public BookResource(int id) {
-		this.id = id;
-	}
+	private final Database db = Database.getInstance();
+
+	@PathParam("id")
+	private int id;
+	@HeaderParam("If-Match")
+	private String ifMatch;
+	@HeaderParam("If-None-Match")
+	private String ifNoneMatch;
 	
 	public int getId() {
 		return id;
 	}
 	
+	private void checkPrecondition(boolean returnNotModifiedIfCheckFailed) {
+		Long version = db.getBookVersion(id);
+		if (ifMatch != null && !VersionUtil.ifMatch(version, ifMatch) ||
+				ifNoneMatch != null && !VersionUtil.ifNoneMatch(version, ifNoneMatch)) {
+			if (returnNotModifiedIfCheckFailed) {
+				throw new WebApplicationException(Response.notModified(version == null ? null : version.toString()).build());
+			} else {
+				throw new WebApplicationException(Status.PRECONDITION_FAILED);
+			}
+		}
+	}
+	
     @GET
-    public Book get(
-    		@HeaderParam("If-Match") final String ifMatch,
-			@HeaderParam("If-None-Match") final String ifNoneMatch) throws Exception {
-    	final Database db = Database.getInstance();
+    public Book get() throws Exception {
     	return db.transact(new Callable<Book>() {
     		public Book call() {
-    			Long version = db.getBookVersion(id);
-    			if (ifMatch != null && !VersionUtil.ifMatch(version, ifMatch) ||
-    					ifNoneMatch != null && !VersionUtil.ifNoneMatch(version, ifNoneMatch))
-    				if (version != null)
-    					throw new WebApplicationException(Response.notModified(version.toString()).build());
-    				else
-    					throw new WebApplicationException(Response.notModified().build());
+    			checkPrecondition(true);
 
     			Book b = Database.getInstance().getBookById(id);
     			if (b == null)
@@ -67,16 +74,10 @@ public class BookResource {
     @PUT
 	public void put(
 			final Book b,
-			@Context final UriInfo uriInfo,
-			@HeaderParam("If-Match") final String ifMatch,
-			@HeaderParam("If-None-Match") final String ifNoneMatch) {
-    	final Database db = Database.getInstance();
+			@Context final UriInfo uriInfo) {
     	db.transact(new Runnable() {
     		public void run() {
-    			Long version = db.getBookVersion(id);
-    			if (ifMatch != null && !VersionUtil.ifMatch(version, ifMatch) ||
-    					ifNoneMatch != null && !VersionUtil.ifNoneMatch(version, ifNoneMatch))
-    				throw new WebApplicationException(Status.PRECONDITION_FAILED);
+    			checkPrecondition(false);
     	    	
     			b.setId(id);
     			db.storeBook(b, uriInfo);
@@ -85,18 +86,12 @@ public class BookResource {
 	}
     
 	@DELETE
-	public void delete(
-			@HeaderParam("If-Match") final String ifMatch,
-			@HeaderParam("If-None-Match") final String ifNoneMatch) throws Exception {
-    	final Database db = Database.getInstance();
+	public void delete() throws Exception {
     	db.transact(new Callable<Void>() {
     		public Void call() throws Exception {
-    			Long version = db.getBookVersion(id);
-    			if (ifMatch != null && !VersionUtil.ifMatch(version, ifMatch) ||
-    					ifNoneMatch != null && !VersionUtil.ifNoneMatch(version, ifNoneMatch))
-    				throw new WebApplicationException(Status.PRECONDITION_FAILED);
+    			checkPrecondition(false);
     	    	
-    			db.removeBook(get(null, null));
+    			db.removeBook(get());
     			return null;
     		}
     	});
