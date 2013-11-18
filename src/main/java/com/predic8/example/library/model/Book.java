@@ -48,8 +48,8 @@ public final class Book extends GenericItem<Book> {
 	@Override
 	public Book clone() {
 		Book clone = super.clone();
-		clone.authors = authors.clone();
-		clone.genre = genre.clone();
+		clone.authors = authors == null ? null : authors.clone();
+		clone.genre = genre == null ? null : genre.clone();
 		return clone;
 	}
 	

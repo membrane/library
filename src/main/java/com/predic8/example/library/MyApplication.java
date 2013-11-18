@@ -19,6 +19,7 @@ public class MyApplication extends ResourceConfig {
 	
 	public MyApplication() {
 		packages("com.predic8.example.library.rest");
+		packages("com.predic8.example.library.rest.filter");
 		packages("com.sun.jersey.server.linking");
 	}
 

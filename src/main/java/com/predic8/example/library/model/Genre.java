@@ -39,13 +39,6 @@ public class Genre extends GenericItem<Genre> {
 	@XmlAttribute(namespace=Constants.XLINK_NS, name="href")
 	public URI self;
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Genre))
-			return false;
-		return id == ((Genre) obj).id;
-	}
-
 	public int getId() {
 		return id;
 	}

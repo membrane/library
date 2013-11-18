@@ -47,7 +47,6 @@ public class Database {
         return result;
 	}
 	
-	
 	// sequences
 	private int lastAuthorId, lastBookId, lastGenreId;
 	
@@ -59,27 +58,40 @@ public class Database {
 	// relations
 	private Map<Integer, Integer> bookGenres = new HashMap<>();
 	private Map<Integer, List<Integer>> bookAuthors = new HashMap<>();
-	
+
+	// versioning
+	private long lastVersion = System.currentTimeMillis();
+	private Map<Integer, Long> authorVersions = new HashMap<>();
+	private Map<Integer, Long> bookVersions = new HashMap<>();
+	private Map<Integer, Long> genreVersions = new HashMap<>();
+
 	private Database() {
 		new InitialLoad(this).run();
+	}
+	
+	private long getNextVersion() {
+		return ++lastVersion;
 	}
 	
 	public synchronized Author getAuthorById(int id) {
 		Author author = authors.get(id);
 		if (author == null)
 			return null;
-		return author.clone();
+		author = author.clone();
+		author.setVersion(authorVersions.get(id));
+		return author;
 	}
 	
 	public synchronized AuthorList getAuthors() {
 		AuthorList authorlist = new AuthorList();
 		for (Map.Entry<Integer, Author> entry : authors.entrySet())
 			if (entry.getValue() != null)
-				authorlist.getAuthors().add(entry.getValue().clone());
+				authorlist.getAuthors().add(getAuthorById(entry.getKey()));
 		return authorlist;
 	}
 
 	public synchronized void storeAuthor(Author author) {
+		authorVersions.put(author.getId(), getNextVersion());
 		authors.put(author.getId(), author);
 	}
 
@@ -102,6 +114,8 @@ public class Database {
 		Book book = books.get(id);
 		if (book == null)
 			return null;
+		book = book.clone();
+		book.setVersion(bookVersions.get(id));
 		
 		// restore Book relations
 		book.setGenre(getGenreById(bookGenres.get(id)));
@@ -135,6 +149,8 @@ public class Database {
 	}
 	
 	public synchronized void storeBook(Book book, UriInfo uriInfo) {
+		bookVersions.put(book.getId(), getNextVersion());
+		
 		// store Book relations
 		bookGenres.put(book.getId(), JerseyUnlinker.getIdFromJAXBObject(uriInfo, book.getGenre()));
 		List<Integer> authorIds = new ArrayList<>();
@@ -162,18 +178,21 @@ public class Database {
 		Genre genre = genres.get(id);
 		if (genre == null)
 			return null;
-		return genre.clone();
+		genre = genre.clone();
+		genre.setVersion(genreVersions.get(id));
+		return genre;
 	}
 
 	public synchronized GenreList getGenres() {
 		GenreList genrelist = new GenreList();
 		for (Map.Entry<Integer, Genre> entry : genres.entrySet())
 			if (entry.getValue() != null)
-				genrelist.getGenres().add(entry.getValue().clone());
+				genrelist.getGenres().add(getGenreById(entry.getKey()));
 		return genrelist;
 	}
 
 	public synchronized void storeGenre(Genre genre) {
+		genreVersions.put(genre.getId(), getNextVersion());
 		genres.put(genre.getId(), genre);
 	}
 	

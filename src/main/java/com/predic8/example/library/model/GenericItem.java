@@ -13,7 +13,11 @@
    limitations under the License. */
 package com.predic8.example.library.model;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 public abstract class GenericItem<T extends GenericItem<T>> implements Cloneable {
+
+	private long version;
 	
 	public abstract int getId();
 
@@ -38,6 +42,15 @@ public abstract class GenericItem<T extends GenericItem<T>> implements Cloneable
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public long getVersion() {
+		return version;
+	}
+	
+	@XmlTransient
+	public void setVersion(long version) {
+		this.version = version;
 	}
 	
 }
