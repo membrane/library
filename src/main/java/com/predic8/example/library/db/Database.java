@@ -13,11 +13,14 @@
    limitations under the License. */
 package com.predic8.example.library.db;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.ws.rs.core.UriInfo;
 
@@ -66,11 +69,24 @@ public class Database {
 	private Map<Integer, Long> genreVersions = new HashMap<>();
 
 	private Database() {
+		try {
+			if ("SANFRANCISCO".equals(InetAddress.getLocalHost().getHostName()))
+				lastVersion = 0;
+		} catch (UnknownHostException e) {
+		}
 		new InitialLoad(this).run();
 	}
 	
 	private long getNextVersion() {
 		return ++lastVersion;
+	}
+	
+	public synchronized void transact(Runnable runnable) {
+		runnable.run();
+	}
+
+	public synchronized <T> T transact(Callable<T> runnable) throws Exception {
+		return runnable.call();
 	}
 	
 	public synchronized Author getAuthorById(int id) {
@@ -80,6 +96,10 @@ public class Database {
 		author = author.clone();
 		author.setVersion(authorVersions.get(id));
 		return author;
+	}
+	
+	public synchronized Long getAuthorVersion(int id) {
+		return authorVersions.get(id);
 	}
 	
 	public synchronized AuthorList getAuthors() {
@@ -126,7 +146,11 @@ public class Database {
 		
 		return book;
 	}
-	
+
+	public synchronized Long getBookVersion(int id) {
+		return bookVersions.get(id);
+	}
+
 	public synchronized BookList getBooks() {
 		BookList booklist = new BookList();
 		for (Map.Entry<Integer, Book> entry : books.entrySet())
@@ -181,6 +205,10 @@ public class Database {
 		genre = genre.clone();
 		genre.setVersion(genreVersions.get(id));
 		return genre;
+	}
+
+	public synchronized Long getGenreVersion(int id) {
+		return genreVersions.get(id);
 	}
 
 	public synchronized GenreList getGenres() {
